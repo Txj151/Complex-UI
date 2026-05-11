@@ -33,8 +33,9 @@ const Instance = ref<FormItem[]>([
       message: '姓名不能为空!',
     },
     events: {
-      focus: () => console.log('姓名 focus'),
-      change: (val: string | number) => console.log('姓名 change:', val),
+      change: (val: string | number) => {
+        if (val) handleCurrentChange(val)
+      },
     },
   },
   {
@@ -103,6 +104,13 @@ const Instance = ref<FormItem[]>([
   },
 ])
 
+const handleCurrentChange = (val: string | number) => {
+  if (val) {
+    const bio = Instance.value.find((i) => i.name === 'bio')
+    if (bio) bio.visible = true
+  }
+}
+
 const toggleGenderOptions = () => {
   const gender = Instance.value.find((i) => i.name === 'gender')
   if (gender && 'options' in gender) {
@@ -119,12 +127,12 @@ const toggleGenderOptions = () => {
 const toggleBioVisible = () => {
   const bio = Instance.value.find((i) => i.name === 'bio')
   if (bio) bio.visible = !bio.visible
-  console.log(Instance.value)
 }
 
 const handleClick = () => {
   formRef.value?.validate().then(() => {
     console.log('检测通过')
+    console.log(formRef.value?.form)
   })
 }
 
