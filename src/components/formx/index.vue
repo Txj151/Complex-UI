@@ -13,7 +13,7 @@
         :validate-on-rule-change="false"
       >
         <el-form-item
-          v-for="item in items"
+          v-for="(item) in items"
           :key="item.name"
           :label="item.label"
           :required="item.rule?.required"
@@ -76,7 +76,7 @@
 </template>
 
 <script setup lang="ts">
-import { computed, onMounted, reactive, ref, watch } from 'vue'
+import { computed, reactive, ref, watch } from 'vue'
 import type { FormItem } from '@/types/formType'
 import { applyItemDefaults } from '@/types/formType'
 import type { FormInstance } from 'element-plus'
@@ -92,24 +92,29 @@ const elFormRef = ref<FormInstance>()
 const form = reactive<Record<string, unknown>>({})
 const rules = reactive<Record<string, unknown>>({})
 
-const initForm = () => {
-  props.FormInstance.forEach((item) => {
-    form[item.name] = item.type === 'checkboxgroup' ? (item.value ?? []) : (item.value ?? '')
-    if (item.rule) {
-      rules[item.name] = item.rule
-    }
-  })
-}
-
 watch(
-  () => props.FormInstance,
-  () => initForm(),
-  { deep: true },
+  items,
+  (newItems) => {
+    const names = new Set(newItems.map((i) => i.name))
+    for (const key of Object.keys(form)) {
+      if (!names.has(key)) {
+        delete form[key]
+        delete rules[key]
+      }
+    }
+    newItems.forEach((item) => {
+      if (!(item.name in form)) {
+        form[item.name] = item.type === 'checkboxgroup' ? (item.value ?? []) : (item.value ?? '')
+      }
+      if (item.rule) {
+        rules[item.name] = item.rule
+      } else if (rules[item.name]) {
+        delete rules[item.name]
+      }
+    })
+  },
+  { deep: true, immediate: true },
 )
-
-onMounted(() => {
-  initForm()
-})
 
 const validate = async () => {
   return elFormRef.value?.validate()

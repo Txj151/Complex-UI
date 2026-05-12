@@ -1,0 +1,98 @@
+{
+  "$schema": "https://opencode.ai/config.json",
+  "model": "anthropic/claude-sonnet-4-5",
+  "small_model": "anthropic/claude-haiku-4-5",
+  "instructions": ["AGENTS.md"],
+  "formatter": true,
+  "lsp": true,
+  "mcp": {
+    "context7": {
+      "type": "remote",
+      "url": "https://mcp.context7.com/mcp",
+      "enabled": true
+    },
+    "gh_grep": {
+      "type": "remote",
+      "url": "https://mcp.grep.app",
+      "enabled": true
+    }
+  },
+  "agent": {
+    "build": {
+      "mode": "primary",
+      "model": "anthropic/claude-sonnet-4-5",
+      "permission": {
+        "edit": "allow",
+        "bash": "allow",
+        "read": "allow",
+        "glob": "allow",
+        "grep": "allow",
+        "list": "allow",
+        "task": "allow",
+        "webfetch": "allow",
+        "lsp": "allow",
+        "skill": "allow"
+      }
+    },
+    "plan": {
+      "mode": "primary",
+      "model": "anthropic/claude-haiku-4-5",
+      "permission": {
+        "edit": "deny",
+        "bash": "ask",
+        "read": "allow",
+        "glob": "allow",
+        "grep": "allow",
+        "list": "allow",
+        "webfetch": "allow",
+        "lsp": "allow",
+        "skill": "allow"
+      }
+    },
+    "code-reviewer": {
+      "description": "Reviews Vue 3 components for best practices, TypeScript correctness, and Element Plus patterns",
+      "mode": "subagent",
+      "model": "anthropic/claude-haiku-4-5",
+      "permission": {
+        "edit": "deny",
+        "bash": {
+          "*": "ask",
+          "npm run lint": "allow",
+          "npm run typecheck": "allow",
+          "npm run build": "allow"
+        },
+        "read": "allow",
+        "glob": "allow",
+        "grep": "allow",
+        "webfetch": "allow",
+        "skill": "allow"
+      }
+    }
+  },
+  "command": {
+    "lint": {
+      "template": "Run lint, typecheck, and build to verify all changes pass quality checks.\n\nRun: npm run lint && npm run typecheck && npm run build\n\nFix any issues found.",
+      "description": "Run all quality checks (lint + typecheck + build)"
+    },
+    "test": {
+      "template": "Run the full test suite with vitest and show any failures.\n\nRun: npm run test\n\nAnalyze failures and suggest fixes.",
+      "description": "Run tests with vitest"
+    },
+    "dev": {
+      "template": "Start the Vite dev server and verify it starts successfully.\n\nRun: npm run dev\n\nCheck for any startup errors.",
+      "description": "Start dev server"
+    }
+  },
+  "permission": {
+    "edit": "allow",
+    "bash": "allow",
+    "read": "allow",
+    "glob": "allow",
+    "grep": "allow",
+    "list": "allow",
+    "task": "allow",
+    "webfetch": "allow",
+    "lsp": "allow",
+    "skill": "allow"
+  }
+}
